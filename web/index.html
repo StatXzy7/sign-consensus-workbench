@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>参数增量符号一致性合并工作台</title>
+  <style>
+    :root {
+      --pos: #2e8b57;
+      --neg: #1f6fb2;
+      --conflict: #c0392b;
+      --zero: #9aa3ad;
+      --bg: #f4f6f8;
+      --panel: #ffffff;
+      --ink: #1d2733;
+      --muted: #5d6b7a;
+      --border: #d8dee5;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 14px/1.5 -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+    header {
+      padding: 14px 22px;
+      background: #102338;
+      color: #fff;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+    }
+    header h1 { font-size: 17px; margin: 0; font-weight: 600; }
+    header .sub { color: #9fb4c8; font-size: 12px; }
+    main { display: grid; grid-template-columns: 380px 1fr; gap: 16px; padding: 16px 22px; }
+    @media (max-width: 980px) { main { grid-template-columns: 1fr; } }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+    }
+    .panel h2 { font-size: 14px; margin: 0 0 10px; }
+    label { display: block; font-size: 12px; color: var(--muted); margin: 8px 0 3px; }
+    input[type=text], input[type=number], textarea {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      font: inherit;
+      font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+      font-size: 12.5px;
+    }
+    textarea { resize: vertical; min-height: 54px; }
+    button {
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 5px;
+      padding: 6px 12px;
+      font: inherit;
+      cursor: pointer;
+    }
+    button.primary { background: #1f6fb2; color: #fff; border-color: #1f6fb2; }
+    button.danger { color: var(--conflict); }
+    button:hover { filter: brightness(0.97); }
+    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; }
+    .candidate {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      margin-top: 8px;
+      background: #fbfcfd;
+    }
+    .candidate .head { display: flex; align-items: center; gap: 8px; }
+    .candidate .head input[type=checkbox] { transform: scale(1.15); }
+    .candidate .head .nm { font-weight: 600; flex: 1; }
+    .error-banner {
+      display: none;
+      background: #fdecea;
+      border: 1px solid #e7a39b;
+      color: #8a2b20;
+      padding: 9px 12px;
+      border-radius: 6px;
+      margin-bottom: 14px;
+      font-size: 13px;
+      white-space: pre-wrap;
+    }
+    .stale-note { font-size: 12px; color: #9a6a00; margin-top: 4px; }
+    .grid-wrap { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+    th, td { border: 1px solid var(--border); padding: 4px 8px; text-align: right; }
+    th { background: #eef2f6; font-weight: 600; }
+    td.idx, th.idx { text-align: left; font-family: ui-monospace, monospace; color: var(--muted); }
+    .chip {
+      display: inline-block;
+      min-width: 20px;
+      padding: 1px 6px;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 11.5px;
+      text-align: center;
+    }
+    .chip.pos { background: var(--pos); }
+    .chip.neg { background: var(--neg); }
+    .chip.zero { background: var(--zero); }
+    .chip.conflict { background: var(--conflict); }
+    .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin: 6px 0 10px; }
+    .legend span { display: inline-flex; align-items: center; gap: 5px; }
+    .swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+    .vec {
+      font-family: ui-monospace, Consolas, monospace;
+      font-size: 12.5px;
+      word-break: break-all;
+      background: #f7f9fb;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 6px 8px;
+    }
+    .muted { color: var(--muted); }
+    .explanation td.note, .explanation th.note { text-align: left; }
+    svg rect.cell { stroke: #fff; stroke-width: 1.5px; }
+    svg text { font-family: ui-monospace, Consolas, monospace; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>参数增量符号一致性合并工作台</h1>
+    <span class="sub">本地 CPU 计算 · Node.js · 严格同正/同负共识 · 等权平均 · 基准减法</span>
+  </header>
+
+  <main>
+    <section>
+      <div class="panel">
+        <div class="toolbar">
+          <button class="primary" id="load-example">载入内置案例</button>
+          <button id="add-candidate">新增候选（复制基准）</button>
+          <button id="export-btn">导出 JSON</button>
+        </div>
+      </div>
+
+      <div class="error-banner" id="error-banner"></div>
+
+      <div class="panel">
+        <h2>基准参数块</h2>
+        <label>名称</label>
+        <input type="text" id="base-name" />
+        <label>形状（逗号分隔，例如 2,3）</label>
+        <input type="text" id="base-shape" />
+        <label>参数值（逗号或空白分隔，行优先顺序）</label>
+        <textarea id="base-values" rows="3"></textarea>
+      </div>
+
+      <div class="panel">
+        <h2>候选参数块（勾选参与合并）</h2>
+        <div id="candidate-list"></div>
+      </div>
+
+      <div class="panel">
+        <h2>合并系数</h2>
+        <label>非负系数 α：最终 = 基准 − α × 保留增量平均</label>
+        <input type="number" id="coefficient" min="0" step="0.1" value="1" />
+      </div>
+    </section>
+
+    <section>
+      <div class="panel">
+        <h2>状态热图（SVG）</h2>
+        <div class="legend">
+          <span><i class="swatch" style="background:var(--pos)"></i>严格同正保留</span>
+          <span><i class="swatch" style="background:var(--neg)"></i>严格同负保留</span>
+          <span><i class="swatch" style="background:var(--conflict)"></i>正负冲突清零</span>
+          <span><i class="swatch" style="background:var(--zero)"></i>含零/全零清零</span>
+        </div>
+        <div class="grid-wrap" id="heatmap"></div>
+        <div class="stale-note" id="stale-note" hidden>当前编辑非法：下方展示的是上一次有效结果。</div>
+      </div>
+
+      <div class="panel">
+        <h2>各候选增量符号</h2>
+        <div class="grid-wrap" id="delta-signs"></div>
+      </div>
+
+      <div class="panel">
+        <h2>保留掩码</h2>
+        <div class="vec" id="mask-vec"></div>
+      </div>
+
+      <div class="panel">
+        <h2>合并增量向量（等权平均，非共识坐标为 0）</h2>
+        <div class="vec" id="merged-vec"></div>
+      </div>
+
+      <div class="panel">
+        <h2>最终参数</h2>
+        <div class="vec" id="final-vec"></div>
+      </div>
+
+      <div class="panel">
+        <h2>逐坐标解释</h2>
+        <div class="grid-wrap">
+          <table class="explanation" id="explain-table">
+            <thead>
+              <tr>
+                <th class="idx">坐标</th>
+                <th>基准</th>
+                <th>状态</th>
+                <th>保留</th>
+                <th>平均增量</th>
+                <th>最终值</th>
+                <th class="note">说明</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

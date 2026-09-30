@@ -1,0 +1,17 @@
+{
+  "name": "sign-consensus-workbench",
+  "version": "1.0.0",
+  "description": "Local CPU workbench for sign-consensus parameter delta merging (Node.js + TypeScript, HTML/SVG UI).",
+  "type": "module",
+  "main": "dist/server/index.js",
+  "scripts": {
+    "build": "tsc && node -e \"require('fs').cpSync('web','dist/public',{recursive:true})\"",
+    "start": "node dist/server/index.js",
+    "test": "tsc && node --test --test-concurrency=1 dist/core/merge.test.js dist/server/app.test.js"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.20.4",
+    "typescript": "^5.9.3"
+  }
+}
