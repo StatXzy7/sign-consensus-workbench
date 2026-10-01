@@ -1,0 +1,104 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  background: #f4f6f9;
+  color: #1f2933;
+}
+header { padding: 18px 24px 8px; }
+header h1 { margin: 0; font-size: 22px; }
+.subtitle { margin: 6px 0 0; color: #52606d; font-size: 13px; }
+.layout {
+  display: grid;
+  grid-template-columns: minmax(340px, 460px) 1fr;
+  gap: 16px;
+  padding: 12px 24px 24px;
+  align-items: start;
+}
+.panel {
+  background: #fff;
+  border: 1px solid #e1e5eb;
+  border-radius: 10px;
+  padding: 16px;
+}
+h2 { margin: 0 0 12px; font-size: 17px; }
+h3 { margin: 16px 0 8px; font-size: 14px; color: #3e4c59; }
+.row { display: flex; gap: 10px; align-items: center; margin: 8px 0; flex-wrap: wrap; }
+.row.between { justify-content: space-between; }
+.block-card {
+  border: 1px solid #d3d9e0;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  background: #fafbfc;
+}
+.block-card.selected { border-color: #2b6cb0; background: #f0f6fc; }
+.block-card.base { border-color: #7b8794; }
+.block-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.block-head label { font-weight: 600; font-size: 13px; }
+.block-head .idx { color: #7b8794; font-size: 12px; }
+.block-head input[type=text] { flex: 1; min-width: 80px; }
+.block-head .spacer { flex: 1; }
+input[type=text], input[type=number], textarea {
+  font: inherit;
+  font-size: 13px;
+  padding: 4px 6px;
+  border: 1px solid #c4ccd4;
+  border-radius: 5px;
+  width: 100%;
+}
+textarea { resize: vertical; font-family: ui-monospace, Menlo, monospace; min-height: 48px; }
+.field-label { font-size: 12px; color: #7b8794; margin: 4px 0 2px; }
+button {
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 12px;
+  border: 1px solid #2b6cb0;
+  background: #2b6cb0;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+}
+button:hover { background: #245a94; }
+button.secondary { background: #fff; color: #2b6cb0; }
+button.danger { background: #fff; color: #c53030; border-color: #c53030; }
+button.danger:hover { background: #fff5f5; }
+.coefficient-row input[type=number] { width: 90px; }
+.coefficient-row input[type=range] { flex: 1; min-width: 120px; }
+#coefficient-hint { font-size: 12px; color: #7b8794; }
+.banner {
+  margin: 8px 24px 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #fff5f5;
+  border: 1px solid #fc8181;
+  color: #9b2c2c;
+  font-size: 13px;
+  white-space: pre-wrap;
+}
+.banner.stale { background: #fffff0; border-color: #d69e2e; color: #975a16; }
+.hidden { display: none; }
+.summary { font-size: 13px; color: #3e4c59; margin-bottom: 6px; }
+.summary b { color: #1f2933; }
+.heatmaps { display: flex; flex-wrap: wrap; gap: 14px; }
+.heatmap-block { border: 1px solid #e1e5eb; border-radius: 8px; padding: 8px; background: #fafbfc; overflow-x: auto; }
+.heatmap-block h4 { margin: 0 0 6px; font-size: 12px; color: #52606d; font-weight: 600; }
+.heatmap-block svg { display: block; }
+.cell-label { font: 10px ui-monospace, Menlo, monospace; fill: #1f2933; }
+.legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 12px; color: #52606d; margin: 6px 0; }
+.legend span { display: inline-flex; align-items: center; gap: 4px; }
+.legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; border: 1px solid rgba(0,0,0,0.15); }
+.explain-wrap { max-height: 420px; overflow: auto; border: 1px solid #e1e5eb; border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; font-size: 12px; }
+th, td { padding: 5px 8px; border-bottom: 1px solid #edf0f3; text-align: right; white-space: nowrap; }
+th { position: sticky; top: 0; background: #f0f3f7; color: #52606d; font-weight: 600; z-index: 1; }
+td.idx, th.idx { text-align: left; font-family: ui-monospace, Menlo, monospace; }
+tr.kept { background: #f7fbff; }
+.badge { display: inline-block; padding: 1px 7px; border-radius: 10px; font-size: 11px; color: #fff; }
+.badge.positive { background: #2f855a; }
+.badge.negative { background: #2b6cb0; }
+.badge.conflict { background: #c53030; }
+.badge.zero { background: #8a94a0; }
+.num { font-family: ui-monospace, Menlo, monospace; }
+footer { padding: 0 24px 20px; color: #9aa5b1; font-size: 12px; }
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }

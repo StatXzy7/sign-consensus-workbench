@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>参数符号一致性合并工作台</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header>
+    <h1>参数符号一致性合并工作台</h1>
+    <p class="subtitle">只保留所有候选严格同正 / 严格同负的坐标，等权平均后按系数从基准中减去</p>
+  </header>
+
+  <div id="error-banner" class="banner hidden" role="alert"></div>
+
+  <main class="layout">
+    <section class="panel inputs">
+      <h2>输入参数块</h2>
+      <div id="base-card"></div>
+      <h3>候选参数块</h3>
+      <div id="candidate-list"></div>
+      <div class="row">
+        <button id="add-candidate" type="button">+ 添加候选</button>
+        <button id="reset-demo" type="button" class="secondary">重置为内置案例</button>
+      </div>
+
+      <h3>应用系数</h3>
+      <div class="row coefficient-row">
+        <input id="coefficient" type="number" min="0" step="0.1" value="1" />
+        <input id="coefficient-range" type="range" min="0" max="5" step="0.05" value="1" />
+        <span id="coefficient-hint">最终 = 基准 − 系数 × 合并增量</span>
+      </div>
+    </section>
+
+    <section class="panel results">
+      <div class="row between">
+        <h2>合并结果</h2>
+        <button id="export-btn" type="button">导出完整输入与结果 (JSON)</button>
+      </div>
+      <div id="summary" class="summary"></div>
+      <h3>热图（深色=保留，红=冲突，灰斜纹=零值）</h3>
+      <div id="heatmaps" class="heatmaps"></div>
+      <h3>逐坐标解释</h3>
+      <div id="explain-wrap" class="explain-wrap"></div>
+    </section>
+  </main>
+
+  <footer>
+    <span>纯本地 CPU 计算 · 无外部服务 / 模型 · 候选顺序不影响结果</span>
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+</html>
